@@ -19,6 +19,7 @@ CREATE TABLE produto(
     CONSTRAINT PK_PRODUTO PRIMARY KEY (id, id_cliente),
     CONSTRAINT FK_CLIENTE_PRODUTO FOREIGN KEY (id_cliente) REFERENCES cliente (id)
 );
+/*
 CREATE TABLE historico_compras(
 	id INT NOT NULL AUTO_INCREMENT,
     id_produto INT NOT NULL,
@@ -30,7 +31,7 @@ CREATE TABLE historico_compras(
 );
 
 drop table  historico_compras;
-
+*/
 
 SELECT * FROM produto;
 
