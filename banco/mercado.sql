@@ -3,8 +3,8 @@ USE mercado;
 CREATE TABLE cliente(
 	id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    usuario VARCHAR(32) CHECK (usuario > 3),
-    senha VARCHAR(32) CHECK (senha > 3),
+    usuario VARCHAR(32) UNIQUE,
+    senha VARCHAR(32) NOT NULL,
     
     CONSTRAINT PK_CLIENTE PRIMARY KEY (id)
 );
