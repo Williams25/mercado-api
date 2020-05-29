@@ -5,7 +5,8 @@ const bodyParser = require('body-parser')
 
 app.use(express.json())
 
-
+const cliente = require('./routes/Cliente.js')
+const produto = require('./routes/Produto.js')
 
 app.use(morgan('dev')) // Monitora as requisições http
 app.use(bodyParser.urlencoded({ extended: false })) // apenas dados simples
@@ -23,8 +24,9 @@ app.use((req, res, next) => {
 
     next()
 })
-const cliente = require('./routes/Cliente.js')
+
 app.use('/clientes', cliente)
+app.use('/produtos', produto)
 
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado');
