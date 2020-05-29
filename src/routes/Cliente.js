@@ -4,7 +4,7 @@ const routes = express.Router()
 const mysql = require('../connection/mysql').pool // tirar isto dps de passar os metodos para o controller
 const ClienteController = require('../controllers/ClienteController')
 
-routes.get('/', ClienteController.login)
+routes.get('/', ClienteController.index)
 
 routes.get('/:id', async (req, res) => {
 	const id = req.params.id
@@ -18,9 +18,9 @@ routes.get('/:id', async (req, res) => {
 		}, (err, result) => {
 			conn.release()
 
-			if (err) return res.status(500).send({ error: err.message, response: null })
+			if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum cliente com id ${id}` })
 
-			if (result.length == 0) return res.status(404).send({ response: null })
+			if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum cliente com id ${id}` })
 
 			const response = {
 				cliente:

@@ -2,7 +2,7 @@ const mysql = require('../connection/mysql').pool
 
 module.exports = {
 
-	async login(req, res, next) {
+	async index(req, res, next) {
 		mysql.getConnection((error, conn) => {
 			if (error) return res.status(500).send({ error: error })
 
@@ -11,9 +11,9 @@ module.exports = {
 			}, (err, result) => {
 				conn.release()
 
-				if (err) return res.status(500).send({ error: err.message, response: null })
+				if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum cliente` })
 
-				if (result.length == 0) return res.status(404).send({ response: null })
+				if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum cliente` })
 
 				const response = {
 					quantidade: result.length,
