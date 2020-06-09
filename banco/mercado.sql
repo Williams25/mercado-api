@@ -4,7 +4,7 @@ CREATE TABLE cliente(
 	id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     usuario VARCHAR(32) UNIQUE,
-    senha VARCHAR(32) NOT NULL,
+    senha VARCHAR(120) NOT NULL,
     
     CONSTRAINT PK_CLIENTE PRIMARY KEY (id)
 );
@@ -35,7 +35,7 @@ CREATE TABLE historico_compras(
 drop table  historico_compras;
 */
 
-drop table  produto;
+drop table  cliente;
 INSERT INTO cliente (nome, usuario, senha) VALUES ('taty', 'tatysavio','taty2000'),
 												  ('william', 'gabrielsouza','1999'),
                                                   ('spaike', 'pata','todos'),

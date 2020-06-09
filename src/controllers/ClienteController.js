@@ -1,6 +1,43 @@
 const mysql = require('../connection/mysql').pool
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
+
+	async login(req, res) {
+		const { usuario, senha } = req.headers
+
+		mysql.getConnection((err, conn) => {
+			if (err) return res.status(500).send({ error: err.message })
+
+			conn.query({
+				sql: `SELECT * FROM cliente WHERE usuario = ?`,
+				values: [usuario]
+			}, (err, results) => {
+				conn.release()
+
+				if (err) return res.status(500).send({ error: err.message })
+
+				if (results.length < 1) return res.status(401).send({ mensagem: 'Falha na autenticação' })
+
+				bcrypt.compare(senha, results[0].senha, (err, result) => {
+					if (err) return res.status(401).send({ mensagem: 'Falha na autenticação' })
+
+					if (result) {
+						const token = jwt.sign({
+							id: results[0].id,
+							nome: results[0].nome,
+							usuario: results[0].usuario
+						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
+
+						return res.status(200).send({ mensagem: 'Autenticado com sucesso', token: token })
+					}
+
+					return res.status(401).send({ mensagem: 'Falha na autenticação' })
+				})
+			})
+		})
+	},
 
 	async index(req, res) {
 		mysql.getConnection((error, conn) => {
@@ -10,9 +47,9 @@ module.exports = {
 			}, (err, result) => {
 				conn.release()
 
-				if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum cliente` })
+				if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum usuario` })
 
-				if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum cliente` })
+				if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum usuario` })
 
 				const response = {
 					quantidade: result.length,
@@ -43,9 +80,9 @@ module.exports = {
 			}, (err, result) => {
 				conn.release()
 
-				if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum cliente` })
+				if (err) return res.status(500).send({ error: err.message, response: `Não foi encontrado nenhum usuario` })
 
-				if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum cliente` })
+				if (result.length == 0) return res.status(404).send({ response: `Não foi encontrado nenhum usuario` })
 
 				const response = {
 					cliente:
@@ -76,36 +113,29 @@ module.exports = {
 			}, (err, result) => {
 				if (err) return res.status(500).send({ error: err.message, response: null })
 
-				let novoUsuario // ARMAZENA CLIENTE.USUARIO PARA FAZER A VERIFICAÇÃO
+				if (result.length > 0) return res.status(203).send({ mensagem: `Usuario ${req.body.usuario} já utilizado` })
 
-				{
-					cliente: result.map((cliente) => {
-						return {
-							usuario: novoUsuario = cliente.usuario
-						}
-					})
-				}
-
-				if (novoUsuario == usuario) return res.status(203).send({ mensagem: `Usuario ${req.body.usuario} já utilizado` })
-
-				conn.query({
-					sql: `INSERT INTO CLIENTE (nome, usuario, senha)	VALUES (?,?,?)`,
-					values: [nome, usuario, senha]
-				}, (err, result) => {
-					conn.release()
-
+				bcrypt.hash(req.body.senha, 10, (err, hash) => {
 					if (err) return res.status(500).send({ error: err.message })
 
-					const response = {
-						mensagem: 'Cadastrado com sucesso',
-						cliente: {
-							nome: req.body.nome,
-							usuario: req.body.usuario,
-							senha: req.body.senha
-						}
-					}
+					conn.query({
+						sql: `INSERT INTO CLIENTE (nome, usuario, senha)	VALUES (?,?,?)`,
+						values: [nome, usuario, hash]
+					}, (err, result) => {
+						conn.release()
 
-					return res.status(201).send(response)
+						if (err) return res.status(500).send({ error: err.message })
+
+						const response = jwt.sign({
+							cliente: {
+								nome: nome,
+								usuario: usuario,
+								senha: senha,
+							}
+						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
+
+						return res.status(201).send({ mensagem: 'Cadastrado com sucesso', token: response })
+					})
 				})
 			})
 		})
@@ -125,26 +155,29 @@ module.exports = {
 
 				if (result.length < 1) return res.status(404).send({ mensagem: `Não encontrado` })
 
-				conn.query({
-					sql: `UPDATE cliente SET nome = ?, 
-																usuario = ?,
-																senha = ?
-							WHERE id = ?`,
-					values: [nome, usuario, senha, id]
-				}, (err, result) => {
+				bcrypt.hash(senha, 10, (err, hash) => {
 					if (err) return res.status(500).send({ error: err.message })
 
-					const response = {
-						mensagem: 'Cliente alterado',
-						cliente: {
-							id: req.body.id,
-							nome: req.body.nome,
-							usuario: req.body.usuario,
-							senha: req.body.senha,
-						}
-					}
+					conn.query({
+						sql: `UPDATE cliente SET nome = ?, 
+																	usuario = ?,
+																	senha = ?
+								WHERE id = ?`,
+						values: [nome, usuario, hash, id]
+					}, (err, result) => {
+						if (err) return res.status(500).send({ error: err.message })
 
-					return res.status(202).send(response)
+						const response = jwt.sign({
+							cliente: {
+								id: id,
+								nome: nome,
+								usuario: usuario,
+								senha: senha,
+							}
+						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
+
+						return res.status(202).send({ mensagem: 'Usuario alterado', token: response })
+					})
 				})
 			})
 		})
@@ -174,9 +207,10 @@ module.exports = {
 						sql: 'DELETE FROM cliente WHERE id = ?',
 						values: [req.body.id]
 					}, (err, result) => {
+						conn.release()
 						if (err) return res.status(500).send({ error: err.message })
 
-						return res.status(200).send({ mensagem: 'Cliente apagado' })
+						return res.status(200).send({ mensagem: 'Usuario apagado' })
 					})
 				})
 			})
