@@ -5,38 +5,53 @@ module.exports = {
 
   async index(req, res) {
     const { id } = req.params
+    const { page = 1 } = req.query
+
     mysql.getConnection((error, conn) => {
       if (error) return res.status(500).send({ error: error })
 
       conn.query({
-        sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ? AND ativo = ?',
+        sql: 'SELECT SUM(total_produto) as total_compra FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ?',
         values: [id, '0']
       }, (err, result) => {
-        conn.release()
 
         if (err) return res.status(500).send({ error: err.message, response: 'Não foi encontrado nenhum dado' })
 
         if (result.length == 0) return res.status(404).send({ response: 'Não foi encontrado nenhum dado' })
 
-        const response = {
-          quantidade: result.length,
-          produto: result.map((produto) => {
-            return {
-              id: produto.id_produto,
-              nome: produto.nome,
-              quantidade: produto.quantidade,
-              preco: produto.preco,
-              data_produto: data.formataData(produto.data_produto),
-              ativo: produto.ativo,
-              cliente: {
-                id_cliente: produto.id_cliente,
-                usuario: produto.usuario
-              }
-            }
-          })
-        }
+        const total_compra = result[0].total_compra
 
-        return res.status(200).send(response)
+        conn.query({
+          sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ? LIMIT ? OFFSET ?',
+          values: [id, '0', 5, (page - 1) * 5]
+        }, (err, result) => {
+          conn.release()
+          if (err) return res.status(500).send({ error: err.message, response: 'Não foi encontrado nenhum dado' })
+
+          if (result.length == 0) return res.status(404).send({ response: 'Não foi encontrado nenhum dado' })
+
+          const response = {
+            quantidade: result.length,
+            total_compra: total_compra,
+            produto: result.map((produto) => {
+              return {
+                id: produto.id_produto,
+                nome: produto.nome,
+                quantidade: produto.quantidade,
+                preco: produto.preco,
+                data_produto: data.formataData(produto.data_produto),
+                total_produto: produto.total_produto,
+                ativo: produto.ativo,
+                cliente: {
+                  id_cliente: produto.id_cliente,
+                  usuario: produto.usuario
+                }
+              }
+            })
+          }
+
+          return res.status(200).send(response)
+        })
       })
     })
   },
@@ -65,6 +80,7 @@ module.exports = {
               quantidade: produto.quantidade,
               preco: produto.preco,
               data_produto: data.formataData(produto.data_produto),
+              total_produto: produto.total_produto,
               ativo: produto.ativo,
               cliente: {
                 id_cliente: produto.id_cliente,
@@ -81,6 +97,15 @@ module.exports = {
 
   async update(req, res) {
     const { id } = req.body
+
+    if (!id) return res.status(500).send({
+      mensagem: 'Campos invalidos',
+      body: {
+        required: {
+          id: 'Int',
+        }
+      }
+    })
 
     mysql.getConnection((error, conn) => {
       if (error) return res.status(500).send({ error: err.message })
@@ -113,6 +138,15 @@ module.exports = {
 
   async delete(req, res) {
     const { id } = req.body
+
+    if (!id) return res.status(500).send({
+      mensagem: 'Campos invalidos',
+      body: {
+        required: {
+          id: 'Int',
+        }
+      }
+    })
 
     mysql.getConnection((error, conn) => {
       if (error) return res.status(500).send({ error: error })

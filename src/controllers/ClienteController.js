@@ -7,6 +7,16 @@ module.exports = {
 	async login(req, res) {
 		const { usuario, senha } = req.headers
 
+		if (!usuario || !senha) return res.status(500).send({
+			mensagem: 'Campos invalidos',
+			headers: {
+				required: {
+					usuario: 'String',
+					senha: 'String'
+				}
+			}
+		})
+
 		mysql.getConnection((err, conn) => {
 			if (err) return res.status(500).send({ error: err.message })
 
@@ -69,7 +79,7 @@ module.exports = {
 	},
 
 	async findId(req, res) {
-		const id = req.params.id
+		const { id } = req.params
 
 		mysql.getConnection((error, conn) => {
 			if (error) return res.status(500).send({ error: error })
@@ -103,6 +113,17 @@ module.exports = {
 
 	async create(req, res) {
 		const { nome, usuario, senha } = req.body
+
+		if (!nome || !usuario || !senha) return res.status(500).send({
+			mensagem: 'Campos invalidos',
+			body: {
+				required: {
+					nome: 'String',
+					usuario: 'String',
+					senha: 'String'
+				}
+			}
+		})
 
 		mysql.getConnection((error, conn) => {
 			if (error) return res.status(500).send({ error: error })
@@ -143,6 +164,18 @@ module.exports = {
 
 	async update(req, res) {
 		const { nome, usuario, senha, id } = req.body
+
+		if (!nome || !usuario || !senha || !id) return res.status(500).send({
+			mensagem: 'Campos invalidos',
+			body: {
+				required: {
+					id: 'Int',
+					nome: 'String',
+					usuario: 'String',
+					senha: 'String'
+				}
+			}
+		})
 
 		mysql.getConnection((error, conn) => {
 			if (error) return res.status(500).send({ error: error })
@@ -185,6 +218,15 @@ module.exports = {
 
 	async delete(req, res) {
 		const { id } = req.body
+
+		if (!id) return res.status(500).send({
+			mensagem: 'Campos invalidos',
+			body: {
+				required: {
+					id: 'Int',
+				}
+			}
+		})
 
 		mysql.getConnection((error, conn) => {
 			if (error) return res.status(500).send({ error: error })
