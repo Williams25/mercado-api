@@ -8,6 +8,7 @@ app.use(express.json())
 const cliente = require('./routes/Cliente.js')
 const produto = require('./routes/Produto.js')
 const historicoProduto = require('./routes/HistoricoProduto.js')
+const decoded = require('./routes/Decoded')
 
 app.use(morgan('dev')) // Monitora as requisições http
 app.use(bodyParser.urlencoded({ extended: false })) // apenas dados simples
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 app.use('/clientes', cliente)
 app.use('/produtos', produto)
 app.use('/historico', historicoProduto)
+app.use('/decode', decoded)
 
 app.use((req, res, next) => {
     const erro = new Error('Não encontrado');

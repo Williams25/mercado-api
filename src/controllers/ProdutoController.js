@@ -6,7 +6,6 @@ module.exports = {
 
   async index(req, res) {
     const { id } = req.params
-    const { page = 1 } = req.query
 
     mysql.getConnection((error, conn) => {
       if (error) return res.status(500).send({ error: error })
@@ -23,8 +22,8 @@ module.exports = {
         const total_compra = result[0].total_compra
 
         conn.query({
-          sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ? LIMIT ? OFFSET ?',
-          values: [id, '1', 5, (page - 1) * 5]
+          sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ?',
+          values: [id, '1']
         }, (err, result) => {
           conn.release()
           if (err) return res.status(500).send({ error: err.message, response: 'Não foi encontrado nenhum dado' })
@@ -33,7 +32,7 @@ module.exports = {
 
           const response = {
             quantidade: result.length,
-            total_compra: total_compra,
+            total_compra: Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(total_compra),
             produto: result.map((produto) => {
               return {
                 id: produto.id_produto,
@@ -148,6 +147,7 @@ module.exports = {
 
   async update(req, res) {
     const { nome, quantidade, preco, id } = req.body
+    console.log(nome, quantidade, preco, id)
 
     if (!id || !nome || !preco || !quantidade) return res.status(500).send({
       mensagem: 'Campos invalidos',
@@ -197,7 +197,7 @@ module.exports = {
     })
   },
 
-  async delete(req, res) {
+  async updateAtivo(req, res) {
     const { id } = req.body
 
     if (!id) return res.status(500).send({
@@ -223,6 +223,34 @@ module.exports = {
         conn.query({
           sql: 'UPDATE produto SET ativo = ? WHERE id = ?',
           values: ['0', id]
+        }, (err, result) => {
+          conn.release()
+
+          if (err) return res.status(500).send({ error: err.message })
+
+          return res.status(200).send({ mensagem: 'Produto alterado' })
+        })
+      })
+    })
+  },
+
+  async delete(req, res) {
+    const { id } = req.params
+
+    mysql.getConnection((error, conn) => {
+      if (error) return res.status(500).send({ error: error })
+
+      conn.query({
+        sql: 'SELECT * FROM produto WHERE id = ?',
+        values: [id]
+      }, (err, result) => {
+        if (err) return res.status(500).send({ error: err.message })
+
+        if (result.length == 0) return res.status(404).send({ mensagem: `Não encontrado` })
+
+        conn.query({
+          sql: 'DELETE FROM produto WHERE id = ?',
+          values: [id]
         }, (err, result) => {
           conn.release()
 

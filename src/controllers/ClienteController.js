@@ -7,6 +7,8 @@ module.exports = {
 	async login(req, res) {
 		const { usuario, senha } = req.headers
 
+		console.log(usuario, senha)
+
 		if (!usuario || !senha) return res.status(500).send({
 			mensagem: 'Campos invalidos',
 			headers: {
@@ -39,6 +41,11 @@ module.exports = {
 							nome: results[0].nome,
 							usuario: results[0].usuario
 						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
+
+						const decode = jwt.verify(token, 'process.env.JWT_KEY', (err, decoded) => {
+							if (err) return res.status(500).send({ mensagem: 'Falha no token' })
+							return decoded
+						})
 
 						return res.status(200).send({ mensagem: 'Autenticado com sucesso', token: token })
 					}

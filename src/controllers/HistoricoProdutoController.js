@@ -5,7 +5,6 @@ module.exports = {
 
   async index(req, res) {
     const { id } = req.params
-    const { page = 1 } = req.query
 
     mysql.getConnection((error, conn) => {
       if (error) return res.status(500).send({ error: error })
@@ -22,8 +21,8 @@ module.exports = {
         const total_compra = result[0].total_compra
 
         conn.query({
-          sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ? LIMIT ? OFFSET ?',
-          values: [id, '0', 5, (page - 1) * 5]
+          sql: 'SELECT * FROM view_produto_cliente WHERE id_cliente = ?  AND ativo = ?',
+          values: [id, '0',]
         }, (err, result) => {
           conn.release()
           if (err) return res.status(500).send({ error: err.message, response: 'Não foi encontrado nenhum dado' })
@@ -32,7 +31,7 @@ module.exports = {
 
           const response = {
             quantidade: result.length,
-            total_compra: total_compra,
+            total_compra: Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(total_compra),
             produto: result.map((produto) => {
               return {
                 id: produto.id_produto,
@@ -120,7 +119,7 @@ module.exports = {
         conn.query({
           sql: `UPDATE produto SET ativo = ?
                 WHERE id = ?`,
-          values: ["1", id]
+          values: ['1', id]
         }, (err, result) => {
           conn.release()
 
