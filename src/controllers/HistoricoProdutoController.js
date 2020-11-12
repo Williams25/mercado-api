@@ -31,7 +31,11 @@ module.exports = {
 
           const response = {
             quantidade: result.length,
+<<<<<<< HEAD
+            total_compra: Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(total_compra),
+=======
             total_compra: Intl.NumberFormat('pt-br', { style: 'currency', currency: 'BRL' }).format(total_compra),
+>>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
             produto: result.map((produto) => {
               return {
                 id: produto.id_produto,

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+require('dotenv/config')
+>>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
 const express = require('express')
 const app = express()
 const morgan = require('morgan')

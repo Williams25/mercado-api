@@ -3,7 +3,10 @@ USE mercado;
 CREATE TABLE cliente(
 	id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
+<<<<<<< HEAD
+=======
     email VARCHAR(150) UNIQUE,
+>>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
     usuario VARCHAR(32) UNIQUE,
     senha VARCHAR(120) NOT NULL,
     
