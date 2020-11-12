@@ -140,10 +140,14 @@ module.exports = {
           }, 'process.env.JWT_KEY', { expiresIn: '5h' })
 
 <<<<<<< HEAD
+<<<<<<< HEAD
           return res.status(201).send({ mensagem: 'Produto inserido', token: response })
 =======
           return res.status(201).send({ mensagem: 'Produto cadastrado', token: response })
 >>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
+=======
+          return res.status(201).send({ mensagem: 'Produto inserido', token: response })
+>>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
         })
       })
     })

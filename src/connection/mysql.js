@@ -2,6 +2,9 @@ const mysql = require('mysql')
 
 var pool = mysql.createPool({
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
     "user": "root",
     "password": "",
     "database": "mercado",
@@ -19,6 +22,7 @@ exports.execute = (query, params=[]) => {
             }
         })
     })
+<<<<<<< HEAD
 =======
 	"user": process.env.USER,
 	"password": process.env.PASSWORD,
@@ -38,6 +42,8 @@ exports.execute = (query, params = []) => {
 		})
 	})
 >>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
+=======
+>>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 }
 
 exports.pool = pool
