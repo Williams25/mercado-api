@@ -7,16 +7,6 @@ module.exports = {
 	async login(req, res) {
 		const { usuario, senha } = req.headers
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		console.log(usuario, senha)
-
-=======
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-		console.log(usuario, senha)
-
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 		if (!usuario || !senha) return res.status(500).send({
 			mensagem: 'Campos invalidos',
 			headers: {
@@ -31,18 +21,8 @@ module.exports = {
 			if (err) return res.status(500).send({ error: err.message })
 
 			conn.query({
-<<<<<<< HEAD
-<<<<<<< HEAD
-				sql: `SELECT * FROM cliente WHERE usuario = ?`,
-				values: [usuario]
-=======
 				sql: `SELECT * FROM cliente WHERE usuario = ? OR email = ?`,
 				values: [usuario, usuario]
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-				sql: `SELECT * FROM cliente WHERE usuario = ?`,
-				values: [usuario]
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 			}, (err, results) => {
 				conn.release()
 
@@ -57,10 +37,6 @@ module.exports = {
 						const token = jwt.sign({
 							id: results[0].id,
 							nome: results[0].nome,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 							usuario: results[0].usuario
 						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
 
@@ -69,15 +45,6 @@ module.exports = {
 							return decoded
 						})
 
-<<<<<<< HEAD
-=======
-							usuario: results[0].usuario,
-							email: results[0].email
-						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
-
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 						return res.status(200).send({ mensagem: 'Autenticado com sucesso', token: token })
 					}
 
@@ -105,13 +72,7 @@ module.exports = {
 						return {
 							id: cliente.id,
 							nome: cliente.nome,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 							email: cliente.email,
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 							usuario: cliente.usuario,
 							senha: cliente.senha
 						}
@@ -145,13 +106,7 @@ module.exports = {
 							return {
 								id: cliente.id,
 								nome: cliente.nome,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 								email: cliente.email,
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 								usuario: cliente.usuario,
 								senha: cliente.senha,
 							}
@@ -164,32 +119,14 @@ module.exports = {
 	},
 
 	async create(req, res) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		const { nome, usuario, senha } = req.body
-
-		if (!nome || !usuario || !senha) return res.status(500).send({
-=======
 		const { nome, usuario, senha, email } = req.body
 
 		if (!nome || !usuario || !senha || !email) return res.status(500).send({
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-		const { nome, usuario, senha } = req.body
-
-		if (!nome || !usuario || !senha) return res.status(500).send({
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 			mensagem: 'Campos invalidos',
 			body: {
 				required: {
 					nome: 'String',
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 					email: 'String',
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 					usuario: 'String',
 					senha: 'String'
 				}
@@ -205,10 +142,6 @@ module.exports = {
 			}, (err, result) => {
 				if (err) return res.status(500).send({ error: err.message, response: null })
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 				if (result.length > 0) return res.status(203).send({ mensagem: `Usuario ${req.body.usuario} já utilizado` })
 
 				bcrypt.hash(req.body.senha, 10, (err, hash) => {
@@ -231,43 +164,6 @@ module.exports = {
 						}, 'process.env.JWT_KEY', { expiresIn: '5h' })
 
 						return res.status(201).send({ mensagem: 'Cadastrado com sucesso', token: response })
-<<<<<<< HEAD
-=======
-				if (result.length > 0) return res.status(203).send({ mensagem: `Usuario ${usuario} já utilizado` })
-
-				conn.query({
-					sql: 'SELECT * FROM view_cliente_login WHERE email = ?',
-					values: [email]
-				}, (err, result) => {
-					if (err) return res.status(500).send({ error: err.message, response: null })
-
-					if (result.length > 0) return res.status(203).send({ mensagem: `Email ${email} já utilizado` })
-
-					bcrypt.hash(senha, 10, (err, hash) => {
-						if (err) return res.status(500).send({ error: err.message })
-
-						conn.query({
-							sql: `INSERT INTO CLIENTE (nome, usuario, senha, email)	VALUES (?,?,?,?)`,
-							values: [nome, usuario, hash, email]
-						}, (err, result) => {
-							conn.release()
-
-							if (err) return res.status(500).send({ error: err.message })
-
-							const response = jwt.sign({
-								cliente: {
-									nome: nome,
-									email: email,
-									usuario: usuario,
-									senha: senha,
-								}
-							}, 'process.env.JWT_KEY', { expiresIn: '5h' })
-
-							return res.status(201).send({ mensagem: 'Cadastrado com sucesso', token: response })
-						})
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 					})
 				})
 			})
@@ -275,33 +171,16 @@ module.exports = {
 	},
 
 	async update(req, res) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		const { nome, usuario, senha, id } = req.body
 
-		if (!nome || !usuario || !senha || !id) return res.status(500).send({
-=======
 		const { nome, usuario, senha, id, email } = req.body
 
 		if (!nome || !usuario || !senha || !id || !email) return res.status(500).send({
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-		const { nome, usuario, senha, id } = req.body
-
-		if (!nome || !usuario || !senha || !id) return res.status(500).send({
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 			mensagem: 'Campos invalidos',
 			body: {
 				required: {
 					id: 'Int',
 					nome: 'String',
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 					email: 'String',
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 					usuario: 'String',
 					senha: 'String'
 				}
@@ -325,22 +204,10 @@ module.exports = {
 					conn.query({
 						sql: `UPDATE cliente SET nome = ?, 
 																	usuario = ?,
-<<<<<<< HEAD
-<<<<<<< HEAD
-																	senha = ?
-								WHERE id = ?`,
-						values: [nome, usuario, hash, id]
-=======
 																	senha = ?,
 																	email = ?
 								WHERE id = ?`,
 						values: [nome, usuario, hash, email, id]
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-																	senha = ?
-								WHERE id = ?`,
-						values: [nome, usuario, hash, id]
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 					}, (err, result) => {
 						if (err) return res.status(500).send({ error: err.message })
 

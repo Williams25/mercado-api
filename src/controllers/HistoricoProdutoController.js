@@ -31,15 +31,7 @@ module.exports = {
 
           const response = {
             quantidade: result.length,
-<<<<<<< HEAD
-<<<<<<< HEAD
-            total_compra: Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(total_compra),
-=======
             total_compra: Intl.NumberFormat('pt-br', { style: 'currency', currency: 'BRL' }).format(total_compra),
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
-            total_compra: Intl.NumberFormat('pt-br', {style: 'currency', currency: 'BRL'}).format(total_compra),
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
             produto: result.map((produto) => {
               return {
                 id: produto.id_produto,
@@ -56,7 +48,6 @@ module.exports = {
               }
             })
           }
-
           return res.status(200).send(response)
         })
       })

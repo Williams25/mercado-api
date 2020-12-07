@@ -1,29 +1,6 @@
 const mysql = require('mysql')
 
 var pool = mysql.createPool({
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
-    "user": "root",
-    "password": "",
-    "database": "mercado",
-    "host": "localhost",
-    "port": 3306
-})
-
-exports.execute = (query, params=[]) => {
-    return new Promise((resolve, reject) => {
-        pool.query(query, params, (err, result) => {
-            if (err) {
-                reject(err)
-            } else {
-                resolve(result)
-            }
-        })
-    })
-<<<<<<< HEAD
-=======
 	"user": process.env.USER,
 	"password": process.env.PASSWORD,
 	"database": process.env.DATABASE,
@@ -41,9 +18,6 @@ exports.execute = (query, params = []) => {
 			}
 		})
 	})
->>>>>>> 9c581b5 (Adicionando variaveis de ambiente para conexão com o bando)
-=======
->>>>>>> 51dcdd0a03500127903cd8a3535f980006497540
 }
 
 exports.pool = pool
